@@ -226,7 +226,7 @@ void CameraOffAxis::applyProjectionAndCameraMatrices(const glm::dmat4& projectio
 {
 	_currentViewMatrix = viewMat;
 	_currentProjMatrix = projectionMat;
-	glMatrixMode(GL_PROJECTION);
+	/*glMatrixMode(GL_PROJECTION);
     GLfloat matrix[16];
     for (int c = 0; c < 4; ++c) {
 		for(int r = 0; r < 4; ++r) {
@@ -242,7 +242,7 @@ void CameraOffAxis::applyProjectionAndCameraMatrices(const glm::dmat4& projectio
 			matrix[c*4+r] = (float)modelView[c][r];
 		}
     }
-	glLoadMatrixf(matrix);
+	glLoadMatrixf(matrix);*/
 }
 
 glm::dmat4 CameraOffAxis::getLastAppliedProjectionMatrix()
