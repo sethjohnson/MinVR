@@ -157,9 +157,9 @@ WindowGLFW::WindowGLFW(WindowSettingsRef settings, std::vector<AbstractCameraRef
 	glfwGetFramebufferSize(_window, &frameBufferWidth, &frameBufferHeight);
 	glm::dvec2 pixelScale(((float)frameBufferWidth)/_width, ((float)frameBufferHeight)/_height);
 
-	for(int i=0; i < settings->viewports.size(); i++) {
-		settings->viewports[i].scale(pixelScale);
-	}
+    for(int i=0; i < _viewports.size(); i++) {
+        _viewports[i].scale(pixelScale);
+    }
 
 	glfwSetKeyCallback(_window, &key_callback);
 	glfwSetCursorEnterCallback(_window, &cursor_enter_callback);
