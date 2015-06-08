@@ -57,6 +57,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <GLFW/glfw3.h>
 #include <vector>
 #include <map>
+#include "MVRCore/Thread.h"
 
 class GLFWDemoApp : public MinVR::AbstractMVRApp
 {
@@ -75,6 +76,7 @@ private:
 	void initLights();
 
 	std::map<int, GLuint> _vboId;
+    MinVR::Mutex _mutex;
 };
 
 #endif
