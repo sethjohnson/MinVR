@@ -85,6 +85,8 @@ RenderThread::RenderThread(WindowRef window, AbstractMVREngine* engine, Abstract
 	RenderThread::nextThreadId++;
 
 	_thread = std::shared_ptr<Thread>(new Thread(&RenderThread::render, this));
+    
+
 }
 
 RenderThread::~RenderThread()
@@ -144,17 +146,21 @@ void RenderThread::render()
 
 		//cout <<"\t Thread "<<_threadId<<" received start rendering"<<endl;
 		_app->perFrameComputation(_threadId, _window);
+        glEnable(GL_SCISSOR_TEST);
 
+        
 		// Draw the scene
 		// Monoscopic
 		if (_window->getSettings()->stereoType == WindowSettings::STEREOTYPE_MONO || _window->getSettings()->stereo == false) {
 			glDrawBuffer(GL_BACK);
-			glClear(GL_STENCIL_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			for (int v=0; v < _window->getNumViewports(); v++) {
 				MinVR::Rect2D viewport = _window->getViewport(v);
 				glViewport(viewport.x0(), viewport.y0(), viewport.width(), viewport.height());
+				glScissor(viewport.x0(), viewport.y0(), viewport.width(), viewport.height());
+                glClear(GL_STENCIL_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 				_window->getCamera(v)->applyProjectionAndCameraMatrices();
-				_app->drawGraphics(_threadId, _window->getCamera(v), _window);
+				_app->drawGraphics(_threadId, _window, v);
 			}  
 		}
 		
@@ -162,41 +168,50 @@ void RenderThread::render()
 		else if (_window->getSettings()->stereoType == WindowSettings::STEREOTYPE_QUADBUFFERED) {
 			// Left Eye
 			glDrawBuffer(GL_BACK_LEFT);
-			glClear(GL_STENCIL_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			for (int v=0; v < _window->getNumViewports(); v++) {
 				MinVR::Rect2D viewport = _window->getViewport(v);
 				glViewport(viewport.x0(), viewport.y0(), viewport.width(), viewport.height());
+				glScissor(viewport.x0(), viewport.y0(), viewport.width(), viewport.height());
+                glClear(GL_STENCIL_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 				_window->getCamera(v)->applyProjectionAndCameraMatricesForLeftEye();
-				_app->drawGraphics(_threadId, _window->getCamera(v), _window);
+				_app->drawGraphics(_threadId, _window, v);
 			}
 			// Right Eye
 			glDrawBuffer(GL_BACK_RIGHT);
-			glClear(GL_STENCIL_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			for (int v=0; v < _window->getNumViewports(); v++) {
 				MinVR::Rect2D viewport = _window->getViewport(v);
 				glViewport(viewport.x0(), viewport.y0(), viewport.width(), viewport.height());
+				glScissor(viewport.x0(), viewport.y0(), viewport.width(), viewport.height());
+                glClear(GL_STENCIL_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 				_window->getCamera(v)->applyProjectionAndCameraMatricesForRightEye();
-				_app->drawGraphics(_threadId, _window->getCamera(v), _window);
+				_app->drawGraphics(_threadId, _window, v);
 			} 
 		}
 
 		// Side by Side Stereo Images, Left Eye on the left half of the screen and Right Eye on the right
 		else if (_window->getSettings()->stereoType == WindowSettings::STEREOTYPE_SIDEBYSIDE) {
 			glDrawBuffer(GL_BACK);
-			glClear(GL_STENCIL_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			// Left Eye
 			for (int v=0; v < _window->getNumViewports(); v++) {
 				MinVR::Rect2D viewport = _window->getViewport(v);
 				glViewport(viewport.x0(), viewport.y0(), viewport.width()/2, viewport.height());
+                glScissor(viewport.x0(), viewport.y0(), viewport.width()/2, viewport.height());
+                glClear(GL_STENCIL_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 				_window->getCamera(v)->applyProjectionAndCameraMatricesForLeftEye();
-				_app->drawGraphics(_threadId, _window->getCamera(v), _window);
+				_app->drawGraphics(_threadId, _window, v);
 			}
 			// Right Eye
 			for (int v=0; v < _window->getNumViewports(); v++) {
 				MinVR::Rect2D viewport = _window->getViewport(v);
 				glViewport(viewport.x0()+viewport.width()/2, viewport.y0(), viewport.width()/2, viewport.height());
+                glScissor(viewport.x0()+viewport.width()/2, viewport.y0(), viewport.width()/2, viewport.height());
+                glClear(GL_STENCIL_BUFFER_BIT | GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 				_window->getCamera(v)->applyProjectionAndCameraMatricesForRightEye();
-				_app->drawGraphics(_threadId, _window->getCamera(v), _window);
+				_app->drawGraphics(_threadId, _window, v);
 			} 
 		}
 
@@ -207,22 +222,26 @@ void RenderThread::render()
 		
 			//Set lefteye texture
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _leftEyeTexture, 0);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			for (int v=0; v < _window->getNumViewports(); v++) {
 				MinVR::Rect2D viewport = _window->getViewport(v);
 				glViewport(viewport.x0(), viewport.y0(), viewport.width(), viewport.height());
+				glScissor(viewport.x0(), viewport.y0(), viewport.width(), viewport.height());
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 				_window->getCamera(v)->applyProjectionAndCameraMatricesForLeftEye();
-				_app->drawGraphics(_threadId, _window->getCamera(v), _window);
+				_app->drawGraphics(_threadId, _window, v);
 			}
 
 			//Set righteye texture
 			glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, _rightEyeTexture, 0);
-			glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 			for (int v=0; v < _window->getNumViewports(); v++) {
 				MinVR::Rect2D viewport = _window->getViewport(v);
 				glViewport(viewport.x0(), viewport.y0(), viewport.width(), viewport.height());
+				glScissor(viewport.x0(), viewport.y0(), viewport.width(), viewport.height());
+                glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
 				_window->getCamera(v)->applyProjectionAndCameraMatricesForRightEye();
-				_app->drawGraphics(_threadId, _window->getCamera(v), _window);
+				_app->drawGraphics(_threadId, _window, v);
 			}
 
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
