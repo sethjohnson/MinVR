@@ -140,6 +140,8 @@ public:
 	*/
 	void addInputDeviceDriver(MinVR::framework::InputDeviceDriverRef driver);
 
+	WindowSettings::VersionType contextVersion;
+
 protected:
 
 	/*! @brief Creates windows and viewports

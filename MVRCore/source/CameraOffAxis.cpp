@@ -63,7 +63,7 @@ namespace MinVR
 
 CameraOffAxis::CameraOffAxis(glm::dvec3 topLeft, glm::dvec3 topRight, glm::dvec3 botLeft, glm::dvec3 botRight,
 	glm::dmat4 initialHeadFrame, double interOcularDistance, 
-	double nearClipDist, double farClipDist) : AbstractCamera()
+	double nearClipDist, double farClipDist, bool isCoreProfile) : AbstractCamera(), _isCoreProfile(isCoreProfile)
 {
 	_topLeft = topLeft;
 	_topRight = topRight;
@@ -231,23 +231,26 @@ void CameraOffAxis::applyProjectionAndCameraMatrices(const glm::dmat4& projectio
 {
 	_currentViewMatrix = viewMat;
 	_currentProjMatrix = projectionMat;
-	/*glMatrixMode(GL_PROJECTION);
-    GLfloat matrix[16];
-    for (int c = 0; c < 4; ++c) {
-		for(int r = 0; r < 4; ++r) {
-			matrix[c*4+r] = (float)projectionMat[c][r];
+	if (!_isCoreProfile)
+	{
+		glMatrixMode(GL_PROJECTION);
+		GLfloat matrix[16];
+		for (int c = 0; c < 4; ++c) {
+			for(int r = 0; r < 4; ++r) {
+				matrix[c*4+r] = (float)projectionMat[c][r];
+			}
 		}
-    }
-	glLoadMatrixf(matrix);
+		glLoadMatrixf(matrix);
 
-	glMatrixMode(GL_MODELVIEW);
-	glm::dmat4 modelView = viewMat * _object2World;
-	for (int c = 0; c < 4; ++c) {
-		for(int r = 0; r < 4; ++r) {
-			matrix[c*4+r] = (float)modelView[c][r];
+		glMatrixMode(GL_MODELVIEW);
+		glm::dmat4 modelView = viewMat * _object2World;
+		for (int c = 0; c < 4; ++c) {
+			for(int r = 0; r < 4; ++r) {
+				matrix[c*4+r] = (float)modelView[c][r];
+			}
 		}
-    }
-	glLoadMatrixf(matrix);*/
+		glLoadMatrixf(matrix);
+	}
 }
 
 glm::dmat4 CameraOffAxis::getLastAppliedProjectionMatrix()

@@ -57,6 +57,7 @@ int main(int argc, char** argv)
 	//MinVR::DataFileUtils::addFileSearchPath("$(G)/src/MinVR/MVRCore/shaders");
 
 	MinVR::AbstractMVREngine *engine = new MinVR::MVREngineGLFW();
+	engine->contextVersion = {0,0};
 	engine->init(argc, argv);
 	MinVR::AbstractMVRAppRef app(new GLFWDemoApp());
 	engine->runApp(app);

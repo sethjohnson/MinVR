@@ -53,7 +53,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 namespace MinVR {
 
-AbstractMVREngine::AbstractMVREngine() : _pluginManager(this)
+AbstractMVREngine::AbstractMVREngine() : _pluginManager(this), contextVersion({3,3})
 {
 }
 
@@ -145,6 +145,7 @@ void AbstractMVREngine::setupWindowsAndViewports()
 		wSettings->visible      = _configMap->get(winStr + "Visible", wSettings->visible);
 		wSettings->useGPUAffinity = _configMap->get(winStr + "UseGPUAffinity", wSettings->useGPUAffinity);
 		wSettings->stereo		= _configMap->get(winStr + "Stereo", wSettings->stereo);
+		wSettings->contextVersion = contextVersion;
 
 		//wSettings.mouseVisible = _configMap->get(winStr + "MouseVisible", wSettings.mouseVisible);
 
@@ -199,7 +200,7 @@ void AbstractMVREngine::setupWindowsAndViewports()
 				glm::dvec3 botRight = _configMap->get(viewportStr + "BotRight", glm::dvec3(1.0, -1.0, 0.0));
 				double nearClip = _configMap->get(viewportStr + "NearClip", 0.01);
 				double farClip  = _configMap->get(viewportStr + "FarClip", 1000.0);
-				AbstractCameraRef cam(new CameraOffAxis(topLeft, topRight, botLeft, botRight, initialHeadFrame, interOcularDistance, nearClip, farClip));
+				AbstractCameraRef cam(new CameraOffAxis(topLeft, topRight, botLeft, botRight, initialHeadFrame, interOcularDistance, nearClip, farClip, wSettings->contextVersion.isCoreProfile()));
 				cameras.push_back(cam);
 			}
 			else if (cameraStr == "Traditional") {

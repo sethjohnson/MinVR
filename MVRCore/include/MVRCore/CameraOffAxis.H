@@ -63,7 +63,7 @@ class CameraOffAxis : public AbstractCamera
 {
 public:
 	CameraOffAxis(glm::dvec3 topLeft, glm::dvec3 topRight, glm::dvec3 botLeft, glm::dvec3 botRight,
-				  glm::dmat4 initialHeadFrame, double interOcularDistance, double nearClipDist, double farClipDist);
+				  glm::dmat4 initialHeadFrame, double interOcularDistance, double nearClipDist, double farClipDist, bool isCoreProfile);
 
 	virtual ~CameraOffAxis();
 
@@ -195,6 +195,8 @@ protected:
 
 	glm::dmat4 _currentViewMatrix;
 	glm::dmat4 _currentProjMatrix;
+
+	bool _isCoreProfile;
 
 	virtual void applyProjectionAndCameraMatrices(const glm::dmat4& projectionMat, const glm::dmat4& viewMat);
 	glm::dmat4 invertYMat();
