@@ -71,6 +71,7 @@ WindowGLFW::WindowGLFW(WindowSettingsRef settings, std::vector<AbstractCameraRef
 	// and find which one corresponds with this window size and position.
 #ifdef _MSC_VER
 	if (settings->useGPUAffinity) {
+		int currentGPU = -1;
 		GPU_DEVICE gpus[MAX_AFFINITY_GPUS];
 		if (WGLEW_NV_gpu_affinity) {
 			int numGPUs = 0;
@@ -79,17 +80,34 @@ WindowGLFW::WindowGLFW(WindowSettingsRef settings, std::vector<AbstractCameraRef
 				if( !wglEnumGpusNV( gpu, &hGPU )) {
 					break;
 				}
-				wglEnumGpuDevicesNV( hGPU, 0, &gpus[gpu] );
-				numGPUs++;
-			}
+				
+				Rect2D win(settings->width, settings->height, settings->xPos, settings->yPos);
+				int deviceIndex = 0;
+				int area = win.getArea();
+				int gpuArea = 0;
+				gpus[gpu].cb = sizeof(GPU_DEVICE);
+				while (wglEnumGpuDevicesNV(hGPU, deviceIndex, &gpus[gpu])) {
 
-			int currentGPU = -1;
-			for(int j=0; j < numGPUs; j++) {
-				if (settings->xPos >= gpus[j].rcVirtualScreen.left && (settings->xPos+settings->width) <= gpus[j].rcVirtualScreen.right &&
-					settings->yPos >= gpus[j].rcVirtualScreen.top && (settings->yPos+settings->height) <= gpus[j].rcVirtualScreen.bottom) {
-						currentGPU = j;
-						break;
+
+					deviceIndex++;
+					int j = gpu;
+					Rect2D dev(gpus[j].rcVirtualScreen.right - gpus[j].rcVirtualScreen.left, gpus[j].rcVirtualScreen.bottom - gpus[j].rcVirtualScreen.top, gpus[j].rcVirtualScreen.left, gpus[j].rcVirtualScreen.top);
+					Rect2D intersection = dev.intersect(win);
+					gpuArea += intersection.getArea();
+					if (area <= gpuArea)
+					{
+						currentGPU = gpu;
+						//break;
+					}
+
+
 				}
+
+				if (currentGPU > 0)
+				{
+					break;
+				}
+				numGPUs++;
 			}
 
 			glfwWindowHint(GLFW_AFFINITY_GPU, currentGPU);
@@ -105,7 +123,7 @@ WindowGLFW::WindowGLFW(WindowSettingsRef settings, std::vector<AbstractCameraRef
 	glfwWindowHint(GLFW_GREEN_BITS, settings->rgbBits);
 	glfwWindowHint(GLFW_BLUE_BITS, settings->rgbBits);
 	glfwWindowHint(GLFW_STENCIL_BITS, settings->stencilBits);
-	glfwWindowHint(GLFW_STEREO, settings->stereo);
+	glfwWindowHint(GLFW_STEREO, settings->stereo && settings->stereoType == WindowSettings::STEREOTYPE_QUADBUFFERED);
 	glfwWindowHint(GLFW_VISIBLE, settings->visible);
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, settings->useDebugContext);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
