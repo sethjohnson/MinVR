@@ -6,17 +6,17 @@
  * 		Dan Orban (dtorban)
  */
 
-#include <MVRCore/GraphicsContext.H>
+#include <MVRCore/RenderDevice.H>
 
-namespace vrbase {
+namespace MinVR {
 
-GraphicsContext::GraphicsContext() {
+RenderDevice::RenderDevice(const WindowInfo& windowInfo) : _windowInfo(windowInfo) {
 	// TODO Auto-generated constructor stub
 
 }
 
-GraphicsContext::~GraphicsContext() {
+RenderDevice::~RenderDevice() {
 	// TODO Auto-generated destructor stub
 }
 
-} /* namespace vrbase */
+} /* namespace MinVR */

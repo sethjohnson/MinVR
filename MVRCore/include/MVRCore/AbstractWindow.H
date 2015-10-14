@@ -111,7 +111,7 @@ public:
 	WindowSettings::StereoType getStereoType() { return _settings->stereoType; }
 	size_t getNumViewports() { return _viewports.size(); }
 	MinVR::Rect2D getViewport(int n) { return _viewports[n]; }
-	AbstractCameraRef getCamera(int n) { return _cameras[n]; }
+	AbstractCameraRef getCamera(int n) const { return _cameras[n]; }
 	WindowSettingsRef getSettings() { return _settings; }
 
 	virtual int getWidth() = 0;

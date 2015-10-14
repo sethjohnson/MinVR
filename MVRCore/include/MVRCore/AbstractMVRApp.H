@@ -53,6 +53,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "MVRCore/ConfigVal.H"
 #include "MVRCore/AbstractCamera.H"
 #include "MVRCore/AbstractWindow.H"
+#include "MVRCore/RenderDevice.H"
 #include <vector>
 
 namespace MinVR {
@@ -130,11 +131,16 @@ public:
 	 *
 	 *  @note This method is called from multiple render threads. Do not modify variables in this method, as it is not thread-safe.
 	 */
-	virtual void drawGraphics(int threadId, AbstractCameraRef camera, WindowRef window) = 0;
 	virtual void drawGraphics(int threadId, WindowRef window, int viewportIndex)
 	{
-		drawGraphics(threadId, window->getCamera(viewportIndex), window);
+		RenderDevice rd({threadId, window, viewportIndex});
+		drawGraphics(rd);
 	}
+	virtual void drawGraphics(RenderDevice& renderDevice)
+	{
+		drawGraphics(renderDevice.getWindowInfo().threadId, renderDevice.getWindowInfo().getCamera(), renderDevice.getWindowInfo().window);
+	}
+	virtual void drawGraphics(int threadId, AbstractCameraRef camera, WindowRef window) = 0;
 
 };
 
