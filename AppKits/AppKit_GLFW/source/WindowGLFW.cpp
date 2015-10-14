@@ -82,14 +82,12 @@ WindowGLFW::WindowGLFW(WindowSettingsRef settings, std::vector<AbstractCameraRef
 				}
 				
 				Rect2D win(settings->width, settings->height, settings->xPos, settings->yPos);
-				std::cout << "Area: " << win.getArea() << std::endl;
 				int deviceIndex = 0;
 				int area = win.getArea();
 				int gpuArea = 0;
 				gpus[gpu].cb = sizeof(GPU_DEVICE);
 				while (wglEnumGpuDevicesNV(hGPU, deviceIndex, &gpus[gpu])) {
 
-					std::cout << &gpus[gpu] << " " << gpus[gpu].cb << " " << gpus[gpu].DeviceName << " " << gpus[gpu].DeviceString << " " << gpus[gpu].Flags << std::endl;
 
 					deviceIndex++;
 					int j = gpu;
@@ -103,8 +101,6 @@ WindowGLFW::WindowGLFW(WindowSettingsRef settings, std::vector<AbstractCameraRef
 					}
 
 
-					std::cout << "(" << intersection.x0() << ", " << intersection.y0() << ") " << "(" << intersection.width() << ", " << intersection.height() << ") " << std::endl;
-					std::cout << "GPU " << j << ": " << intersection.getArea() << " = " << gpus[j].rcVirtualScreen.left << " " << gpus[j].rcVirtualScreen.right << " " << gpus[j].rcVirtualScreen.top << " " << gpus[j].rcVirtualScreen.bottom << std::endl;
 				}
 
 				if (currentGPU > 0)
@@ -115,36 +111,8 @@ WindowGLFW::WindowGLFW(WindowSettingsRef settings, std::vector<AbstractCameraRef
 			}
 
 			glfwWindowHint(GLFW_AFFINITY_GPU, currentGPU);
-			//settings->gpuId = currentGPU;
 		}
 	}
-	/*
-	if (settings->useGPUAffinity) {
-		GPU_DEVICE gpus[MAX_AFFINITY_GPUS];
-		if (WGLEW_NV_gpu_affinity) {
-			int numGPUs = 0;
-			for( UINT gpu = 0; true; ++gpu ) {
-				HGPUNV hGPU = 0;
-				if( !wglEnumGpusNV( gpu, &hGPU )) {
-					break;
-				}
-				wglEnumGpuDevicesNV( hGPU, 0, &gpus[gpu] );
-				numGPUs++;
-			}
-
-			int currentGPU = -1;
-			for(int j=0; j < numGPUs; j++) {
-				if (settings->xPos >= gpus[j].rcVirtualScreen.left && (settings->xPos+settings->width) <= gpus[j].rcVirtualScreen.right &&
-					settings->yPos >= gpus[j].rcVirtualScreen.top && (settings->yPos+settings->height) <= gpus[j].rcVirtualScreen.bottom) {
-						currentGPU = j;
-						break;
-				}
-			}
-
-			glfwWindowHint(GLFW_AFFINITY_GPU, currentGPU);
-		}
-	}
-	*/
 #endif
 	glfwWindowHint(GLFW_ALPHA_BITS, settings->alphaBits);
 	glfwWindowHint(GLFW_DEPTH_BITS, settings->depthBits);
@@ -155,7 +123,7 @@ WindowGLFW::WindowGLFW(WindowSettingsRef settings, std::vector<AbstractCameraRef
 	glfwWindowHint(GLFW_GREEN_BITS, settings->rgbBits);
 	glfwWindowHint(GLFW_BLUE_BITS, settings->rgbBits);
 	glfwWindowHint(GLFW_STENCIL_BITS, settings->stencilBits);
-	glfwWindowHint(GLFW_STEREO, settings->stereo);
+	glfwWindowHint(GLFW_STEREO, settings->stereo && settings->stereoType == WindowSettings::STEREOTYPE_QUADBUFFERED);
 	glfwWindowHint(GLFW_VISIBLE, settings->visible);
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, settings->useDebugContext);
 	/*glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
