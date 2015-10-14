@@ -41,6 +41,7 @@ include/MVRCore/Event.H
 include/MVRCore/GraphicsContext.H
 include/MVRCore/RenderThread.H
 include/MVRCore/StringUtils.H
+include/MVRCore/VersionedItem.H
 include/MVRCore/WindowSettings.H
 include/MVRCore/Rect2D.H
 include/io/FileSystem.h

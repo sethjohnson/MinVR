@@ -12,6 +12,7 @@
 #include "MVRCore/AbstractWindow.H"
 #include "MVRCore/Thread.h"
 #include <map>
+#include "MVRCore/VersionedItem.H"
 
 namespace MinVR {
 
@@ -47,7 +48,24 @@ private:
 	std::map<int, T*> _threadMap;
 };
 
+class ContextObject : public VersionedItem {
+public:
+	virtual ~ContextObject();
+	void initContext();
+	void updateContext();
+	void cleanupContext();
+	void updateImediately();
 
+protected:
+	virtual void initContextItem() = 0;
+	virtual bool updateContextItem(bool changed) = 0;
+	virtual void cleanupContextItem() = 0;
+
+private:
+	bool isInitialized() { return _initialized.get() != NULL && *_initialized; }
+	ContextSpecificPtr<bool> _initialized;
+	ContextSpecificPtr<int> _oldVersion;
+};
 
 //-----------------------------------------------------------
 

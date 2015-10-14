@@ -40,4 +40,65 @@ GraphicsContextHolder GraphicsContext::getCurrentContext()
 	return context;
 }
 
+ContextObject::~ContextObject() {
+}
+
+void ContextObject::initContext()
+{
+	if (!isInitialized())
+	{
+		initContextItem();
+		_oldVersion.reset(new int(getVersion()));
+		_initialized.reset(new bool(true));
+	}
+}
+
+void ContextObject::updateContext()
+{
+	if (!isInitialized())
+	{
+		initContext();
+	}
+
+	int version = getVersion();
+	if (updateContextItem(*_oldVersion != version))
+	{
+		*_oldVersion = version;
+	}
+}
+
+void ContextObject::cleanupContext()
+{
+	if (GraphicsContext::getCurrentContext().threadId < 0)
+	{
+		std::vector<GraphicsContextHolder> contexts = _initialized.getContexts();
+		for (int f = 0; f < contexts.size(); f++)
+		{
+			GraphicsContext::currentThreadId = contexts[f].threadId;
+			contexts[f].window->makeContextCurrent();
+			cleanupContextItem();
+			contexts[f].window->releaseContext();
+		}
+
+		GraphicsContext::currentThreadId = -1;
+	}
+}
+
+void ContextObject::updateImediately()
+{
+	if (GraphicsContext::currentThreadId < 0)
+	{
+		std::vector<GraphicsContextHolder> contexts = _initialized.getContexts();
+		for (int f = 0; f < contexts.size(); f++)
+		{
+			GraphicsContext::currentThreadId = contexts[f].threadId;
+			contexts[f].window->makeContextCurrent();
+			updateContext();
+			contexts[f].window->releaseContext();
+		}
+
+		GraphicsContext::currentThreadId = -1;
+	}
+}
+
 } /* namespace MinVR */
