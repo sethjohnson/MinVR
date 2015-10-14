@@ -56,6 +56,12 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 namespace MinVR
 {
 
+#if defined(WIN32)
+#define THREAD_LOCAL __declspec(thread)
+#else
+#define THREAD_LOCAL thread_local
+#endif
+
 typedef std::mutex Mutex;
 typedef std::condition_variable ConditionVariable;
 typedef std::thread Thread;

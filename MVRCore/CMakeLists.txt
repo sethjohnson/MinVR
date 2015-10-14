@@ -13,6 +13,7 @@ source/ConfigMap.cpp
 source/ConfigVal.cpp
 source/DataFileUtils.cpp
 source/Event.cpp
+source/GraphicsContext.cpp
 source/RenderThread.cpp
 source/StringUtils.cpp
 source/Rect2D.cpp
@@ -37,6 +38,7 @@ include/MVRCore/ConfigMap.H
 include/MVRCore/ConfigVal.H
 include/MVRCore/DataFileUtils.H
 include/MVRCore/Event.H
+include/MVRCore/GraphicsContext.H
 include/MVRCore/RenderThread.H
 include/MVRCore/StringUtils.H
 include/MVRCore/WindowSettings.H
