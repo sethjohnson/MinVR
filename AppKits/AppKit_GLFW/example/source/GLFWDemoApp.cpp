@@ -230,7 +230,7 @@ void GLFWDemoApp::postInitialization()
 {
 }
 
-void GLFWDemoApp::drawGraphics(int threadId, WindowRef window, int viewportIndex)
+void GLFWDemoApp::drawGraphics(int threadId, AbstractCameraRef camera, WindowRef window)
 {
 	GLenum err;
 	while((err = glGetError()) != GL_NO_ERROR) {
@@ -252,7 +252,7 @@ void GLFWDemoApp::drawGraphics(int threadId, WindowRef window, int viewportIndex
 	glm::dmat4 translate = glm::translate(glm::dmat4(1.0f), glm::dvec3(0.0f, 0.0f, -5.0f));
 	glm::dvec2 rotAngles(-20.0, 45.0);
 	glm::dmat4 rotate1 = glm::rotate(translate, rotAngles.y, glm::dvec3(0.0,1.0,0.0));
-	window->getCamera(viewportIndex)->setObjectToWorldMatrix(glm::rotate(rotate1, rotAngles.x, glm::dvec3(1.0,0,0)));
+	camera->setObjectToWorldMatrix(glm::rotate(rotate1, rotAngles.x, glm::dvec3(1.0,0,0)));
 	glDrawArrays(GL_TRIANGLES, 0, 36);
 
     glDisableClientState(GL_VERTEX_ARRAY);  // disable vertex arrays

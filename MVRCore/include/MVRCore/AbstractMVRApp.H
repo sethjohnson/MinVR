@@ -130,7 +130,11 @@ public:
 	 *
 	 *  @note This method is called from multiple render threads. Do not modify variables in this method, as it is not thread-safe.
 	 */
-	virtual void drawGraphics(int threadId, WindowRef window, int viewportIndex) = 0;
+	virtual void drawGraphics(int threadId, AbstractCameraRef camera, WindowRef window) = 0;
+	virtual void drawGraphics(int threadId, WindowRef window, int viewportIndex)
+	{
+		drawGraphics(threadId, window->getCamera(viewportIndex), window);
+	}
 
 };
 

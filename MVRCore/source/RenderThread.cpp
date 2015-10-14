@@ -85,8 +85,6 @@ RenderThread::RenderThread(WindowRef window, AbstractMVREngine* engine, Abstract
 	RenderThread::nextThreadId++;
 
 	_thread = std::shared_ptr<Thread>(new Thread(&RenderThread::render, this));
-    
-
 }
 
 RenderThread::~RenderThread()
@@ -148,7 +146,6 @@ void RenderThread::render()
 		_app->perFrameComputation(_threadId, _window);
         glEnable(GL_SCISSOR_TEST);
 
-        
 		// Draw the scene
 		// Monoscopic
 		if (_window->getSettings()->stereoType == WindowSettings::STEREOTYPE_MONO || _window->getSettings()->stereo == false) {
