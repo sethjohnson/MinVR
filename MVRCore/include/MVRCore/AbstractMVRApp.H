@@ -142,6 +142,13 @@ public:
 	}
 	virtual void drawGraphics(int threadId, AbstractCameraRef camera, WindowRef window) = 0;
 
+	bool isRunning() { return _running; }
+
+	void terminate() { _running = false; }
+
+
+private:
+	bool _running = true;
 };
 
 

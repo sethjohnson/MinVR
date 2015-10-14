@@ -50,6 +50,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <log/CompositeLogger.h>
 #include <io/FileSystem.h>
 #include <fstream>
+#include "MVRCore/GraphicsContext.H"
 
 namespace MinVR {
 
@@ -59,6 +60,7 @@ AbstractMVREngine::AbstractMVREngine() : _pluginManager(this), contextVersion({3
 
 AbstractMVREngine::~AbstractMVREngine()
 {
+	GraphicsContext::cleanup();
 }
 
 
@@ -297,8 +299,8 @@ void AbstractMVREngine::runApp(AbstractMVRAppRef app)
 
 	_frameCount = 0;
 	
-	bool quit = false;
-	while (!quit) {
+
+	while (app->isRunning()) {
 		runOneFrameOfApp(app);
 	}
 }

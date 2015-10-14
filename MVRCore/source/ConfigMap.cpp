@@ -60,7 +60,7 @@ bool ConfigMap::readFile(const std::string &filename)
 	if (MinVR::FileSystem::getInstance().exists(filename))
 	{
 		std::string output = "ConfigMap parsing file \"" + filename + "\".";
-		std::cout << output << std::endl;
+		Logger::getInstance().log(output, "tag", "MVRCore");
 
 		ifstream fIn;
 		fIn.open(filename.c_str(),std::ios::in);

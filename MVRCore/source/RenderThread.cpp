@@ -56,6 +56,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "MVRCore/AbstractMVREngine.H"
 #include <log/Logger.h>
 #include <io/FileSystem.h>
+#include "MVRCore/GraphicsContext.H"
 
 using namespace std;
 
@@ -108,6 +109,7 @@ void RenderThread::render()
 		std::cout << "openGL ERROR before init context specific: "<<err<<std::endl;
 	}
 
+	GraphicsContext::setCurrentContext({_threadId, _window});
 	_engine->initializeContextSpecificVars(_threadId, _window);
 	_app->initializeContextSpecificVars(_threadId, _window);
 
@@ -267,6 +269,7 @@ void RenderThread::render()
 		}
 
 		//cout << "\tThread "<<_threadId<<" finished rendering"<<endl;
+		glFlush();
 
 		// Wait for the other threads to get here before swapping buffers
 		_swapBarrier->wait();

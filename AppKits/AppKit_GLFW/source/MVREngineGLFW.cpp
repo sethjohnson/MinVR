@@ -80,13 +80,12 @@ void MVREngineGLFW::runApp(AbstractMVRAppRef app)
 
 	_frameCount = 0;
 	
-	bool quit = false;
-	while (!quit) {
+	while (app->isRunning()) {
 		runOneFrameOfApp(app);
 
 		for (int i=0; i<_windows.size(); i++) {
 			if (glfwWindowShouldClose(((WindowGLFW*)_windows[i].get())->getWindowPtr())) {
-				quit = true;
+				app->terminate();
 			}
 		}
 	}

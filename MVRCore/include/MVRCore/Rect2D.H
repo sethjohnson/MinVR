@@ -64,7 +64,7 @@ public:
 	int y0();
 	int x1();
 	int y1();
-        void scale(glm::dvec2 scaleValues);
+	void scale(glm::dvec2 scaleValues);
 	Rect2D intersect(const Rect2D& rect);
 	int getArea();
 
