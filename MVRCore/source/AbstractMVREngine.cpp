@@ -268,6 +268,7 @@ void AbstractMVREngine::setupRenderThreads()
 
 	RenderThread::numRenderingThreads = _windows.size();
 	RenderThread::renderingState = RenderThread::RENDERING_WAIT;
+	RenderThread::numThreadsReceivedRenderingStartFlush = 0;
 	RenderThread::numThreadsReceivedRenderingComplete = 0;
 	RenderThread::numThreadsReceivedStartRendering = 0;
 	RenderThread::nextThreadId = 0;
@@ -276,7 +277,7 @@ void AbstractMVREngine::setupRenderThreads()
 	_swapBarrier = std::shared_ptr<Barrier>(new Barrier(RenderThread::numRenderingThreads));
 
 	for(int i=0; i < _windows.size(); i++) {
-		RenderThreadRef thread(new RenderThread(_windows[i], this, _app, _swapBarrier.get(), &_threadsInitializedMutex, &_threadsInitializedCond, &_startRenderingMutex, &_renderingCompleteMutex, &_startRenderingCond, &_renderingCompleteCond));
+		RenderThreadRef thread(new RenderThread(_windows[i], this, _app, _swapBarrier.get(), &_threadsInitializedMutex, &_threadsInitializedCond, &_startRenderingMutex, &_renderingFlushMutex, &_renderingCompleteMutex, &_startRenderingCond, &_renderingFlushCond, &_renderingCompleteCond));
 		_renderThreads.push_back(thread);
 	}
 }
@@ -335,6 +336,14 @@ void AbstractMVREngine::runOneFrameOfApp(AbstractMVRAppRef app)
 	RenderThread::renderingState = RenderThread::RENDERING_START;
 	_startRenderingCond.notify_all();
 	_startRenderingMutex.unlock();
+
+	// Wait for threads to start graphics flush
+	UniqueMutexLock renderingFlushLock(_renderingFlushMutex);
+	while (RenderThread::numThreadsReceivedRenderingStartFlush < _windows.size()) {
+		_renderingFlushCond.wait(renderingFlushLock);
+	}
+
+	RenderThread::numThreadsReceivedRenderingStartFlush = 0;
 
 	// Wait for threads to finish rendering
 	UniqueMutexLock renderingCompleteLock(_renderingCompleteMutex);

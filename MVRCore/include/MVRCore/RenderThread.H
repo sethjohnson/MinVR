@@ -86,11 +86,12 @@ public:
 		RENDERING_TERMINATE
 	};
 
-	RenderThread(WindowRef window, AbstractMVREngine* engine, AbstractMVRAppRef app, Barrier* swapBarrier, Mutex* initializedMutex, ConditionVariable* initializedCondition, Mutex* startRenderingMutex, Mutex* renderingCompleteMutex, ConditionVariable* startRenderingCond, ConditionVariable* renderingCompleteCond);
+	RenderThread(WindowRef window, AbstractMVREngine* engine, AbstractMVRAppRef app, Barrier* swapBarrier, Mutex* initializedMutex, ConditionVariable* initializedCondition, Mutex* startRenderingMutex, Mutex* renderingFlushMutex, Mutex* renderingCompleteMutex, ConditionVariable* startRenderingCond , ConditionVariable* renderingFlushCond, ConditionVariable* renderingCompleteCond);
 	~RenderThread();
 
 	static RenderingState renderingState;
 	static int numThreadsReceivedStartRendering;
+	static int numThreadsReceivedRenderingStartFlush;
 	static int numThreadsReceivedRenderingComplete;
 	static size_t numRenderingThreads;
 	static int nextThreadId;
@@ -112,9 +113,11 @@ private:
 	Barrier* _swapBarrier;
 	Mutex* _initMutex;
 	Mutex* _startRenderingMutex;
+	Mutex* _renderingFlushMutex;
 	Mutex* _renderingCompleteMutex;
 	ConditionVariable* _initCond;
 	ConditionVariable* _startRenderingCond;
+	ConditionVariable* _renderingFlushCond;
 	ConditionVariable* _renderingCompleteCond;
 	int _threadId;
 	

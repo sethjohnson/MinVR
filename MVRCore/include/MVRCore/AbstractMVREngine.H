@@ -211,6 +211,8 @@ protected:
 	ConditionVariable _threadsInitializedCond;
 	Mutex _startRenderingMutex;
 	ConditionVariable _startRenderingCond;
+	Mutex _renderingFlushMutex;
+	ConditionVariable _renderingFlushCond;
 	Mutex _renderingCompleteMutex;
 	ConditionVariable _renderingCompleteCond;
 	std::shared_ptr<Barrier> _swapBarrier;
