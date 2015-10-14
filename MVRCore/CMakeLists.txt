@@ -40,6 +40,7 @@ include/MVRCore/ConfigVal.H
 include/MVRCore/DataFileUtils.H
 include/MVRCore/Event.H
 include/MVRCore/GraphicsContext.H
+include/MVRCore/GraphicsObject.H
 include/MVRCore/RenderDevice.H
 include/MVRCore/RenderThread.H
 include/MVRCore/StringUtils.H
