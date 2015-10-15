@@ -16,6 +16,8 @@
 
 namespace MinVR {
 
+class AbstractMVRApp;
+
 struct WindowInfo
 {
 	int threadId;
@@ -25,17 +27,27 @@ struct WindowInfo
 	AbstractCameraRef getCamera() const { return window->getCamera(viewportIndex); }
 };
 
+struct AppInfo
+{
+	AbstractMVRApp* app;
+};
+
 class RenderDevice {
 public:
-	RenderDevice(const WindowInfo& windowInfo);
+	RenderDevice(const WindowInfo& windowInfo, const AppInfo& appInfo);
 	virtual ~RenderDevice();
 
 	const WindowInfo& getWindowInfo() const {
 		return _windowInfo;
 	}
 
+	const AppInfo& getAppInfo() const {
+		return _appInfo;
+	}
+
 private:
 	WindowInfo _windowInfo;
+	AppInfo _appInfo;
 };
 
 } /* namespace MinVR */

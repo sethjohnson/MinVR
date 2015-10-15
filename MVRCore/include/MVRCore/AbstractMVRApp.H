@@ -133,7 +133,7 @@ public:
 	 */
 	virtual void drawGraphics(int threadId, WindowRef window, int viewportIndex)
 	{
-		RenderDevice rd({threadId, window, viewportIndex});
+		RenderDevice rd(WindowInfo({threadId, window, viewportIndex}), AppInfo({this}));
 		drawGraphics(rd);
 	}
 	virtual void drawGraphics(RenderDevice& renderDevice)
@@ -145,7 +145,6 @@ public:
 	bool isRunning() { return _running; }
 
 	void terminate() { _running = false; }
-
 
 private:
 	bool _running = true;

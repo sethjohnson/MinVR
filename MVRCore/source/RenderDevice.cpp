@@ -10,7 +10,7 @@
 
 namespace MinVR {
 
-RenderDevice::RenderDevice(const WindowInfo& windowInfo) : _windowInfo(windowInfo) {
+RenderDevice::RenderDevice(const WindowInfo& windowInfo, const AppInfo& appInfo) : _windowInfo(windowInfo), _appInfo(appInfo) {
 	// TODO Auto-generated constructor stub
 
 }
