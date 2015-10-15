@@ -80,8 +80,10 @@ RenderThread::RenderThread(WindowRef window, AbstractMVREngine* engine, Abstract
 	_initMutex = initializedMutex;
 	_initCond = initializedCondition;
 	_startRenderingMutex = startRenderingMutex;
+	_renderingFlushMutex = renderingFlushMutex;
 	_renderingCompleteMutex = renderingCompleteMutex;
 	_startRenderingCond = startRenderingCond;
+	_renderingFlushCond = renderingFlushCond;
 	_renderingCompleteCond = renderingCompleteCond;
 	_threadId = RenderThread::nextThreadId;
 	RenderThread::nextThreadId++;
