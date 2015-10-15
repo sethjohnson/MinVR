@@ -270,6 +270,7 @@ void AbstractMVREngine::setupRenderThreads()
 
 	RenderThread::numRenderingThreads = _windows.size();
 	RenderThread::renderingState = RenderThread::RENDERING_WAIT;
+	RenderThread::numThreadsReceivedRenderingStartFlush = 0;
 	RenderThread::numThreadsReceivedRenderingComplete = 0;
 	RenderThread::numThreadsReceivedStartRendering = 0;
 	RenderThread::nextThreadId = 0;
@@ -278,7 +279,7 @@ void AbstractMVREngine::setupRenderThreads()
 	_swapBarrier = std::shared_ptr<Barrier>(new Barrier(RenderThread::numRenderingThreads));
 
 	for(int i=0; i < _windows.size(); i++) {
-		RenderThreadRef thread(new RenderThread(_windows[i], this, _app, _swapBarrier.get(), &_threadsInitializedMutex, &_threadsInitializedCond, &_startRenderingMutex, &_renderingCompleteMutex, &_startRenderingCond, &_renderingCompleteCond));
+		RenderThreadRef thread(new RenderThread(_windows[i], this, _app, _swapBarrier.get(), &_threadsInitializedMutex, &_threadsInitializedCond, &_startRenderingMutex, &_renderingFlushMutex, &_renderingCompleteMutex, &_startRenderingCond, &_renderingFlushCond, &_renderingCompleteCond));
 		_renderThreads.push_back(thread);
 	}
 }
@@ -299,10 +300,22 @@ void AbstractMVREngine::runApp(AbstractMVRAppRef app)
 
 	_frameCount = 0;
 	
+	updateFrame();
 
 	while (app->isRunning()) {
 		runOneFrameOfApp(app);
 	}
+}
+
+void AbstractMVREngine::updateFrame()
+{
+	pollUserInput();
+	updateProjectionForHeadTracking();
+
+	TimeStamp now = getCurrentTime();
+	Duration diff = getDuration(now,_syncTimeStart);
+	double syncTime = getDurationSeconds(diff);
+	_app->doUserInputAndPreDrawComputation(_events, syncTime);
 }
 
 void AbstractMVREngine::runOneFrameOfApp(AbstractMVRAppRef app)
@@ -322,21 +335,25 @@ void AbstractMVREngine::runOneFrameOfApp(AbstractMVRAppRef app)
 		}
 		threadsInitializedLock.unlock();
 		_app->postInitialization();
+
+		updateFrame();
 	}
-
-	pollUserInput();
-	updateProjectionForHeadTracking();
-
-	TimeStamp now = getCurrentTime();
-	Duration diff = getDuration(now,_syncTimeStart);
-	double syncTime = getDurationSeconds(diff);
-	_app->doUserInputAndPreDrawComputation(_events, syncTime);
 
 	//std::cout << "Notifying rendering threads to start rendering frame: "<<_frameCount++<<std::endl;
 	_startRenderingMutex.lock();
 	RenderThread::renderingState = RenderThread::RENDERING_START;
 	_startRenderingCond.notify_all();
 	_startRenderingMutex.unlock();
+
+	// Wait for threads to start graphics flush
+	UniqueMutexLock renderingFlushLock(_renderingFlushMutex);
+	while (RenderThread::numThreadsReceivedRenderingStartFlush < _windows.size()) {
+		_renderingFlushCond.wait(renderingFlushLock);
+	}
+
+	updateFrame();
+
+	RenderThread::numThreadsReceivedRenderingStartFlush = 0;
 
 	// Wait for threads to finish rendering
 	UniqueMutexLock renderingCompleteLock(_renderingCompleteMutex);

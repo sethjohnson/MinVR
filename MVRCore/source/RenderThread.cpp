@@ -64,13 +64,14 @@ namespace MinVR {
 
 RenderThread::RenderingState RenderThread::renderingState = RenderThread::RENDERING_WAIT;
 int RenderThread::numThreadsReceivedStartRendering = 0;
+int RenderThread::numThreadsReceivedRenderingStartFlush = 0;
 int RenderThread::numThreadsReceivedRenderingComplete = 0;
 size_t RenderThread::numRenderingThreads = 0;
 int RenderThread::nextThreadId = 0;
 int RenderThread::numThreadsInitComplete = 0;
 
-RenderThread::RenderThread(WindowRef window, AbstractMVREngine* engine, AbstractMVRAppRef app, Barrier* swapBarrier,  Mutex* initializedMutex, ConditionVariable* initializedCondition,
-		Mutex* startRenderingMutex, Mutex* renderingCompleteMutex, ConditionVariable* startRenderingCond, ConditionVariable* renderingCompleteCond)
+RenderThread::RenderThread(WindowRef window, AbstractMVREngine* engine, AbstractMVRAppRef app, Barrier* swapBarrier, Mutex* initializedMutex,
+		ConditionVariable* initializedCondition, Mutex* startRenderingMutex, Mutex* renderingFlushMutex, Mutex* renderingCompleteMutex, ConditionVariable* startRenderingCond , ConditionVariable* renderingFlushCond, ConditionVariable* renderingCompleteCond)
 {
 	_window = window;
 	_engine = engine;
@@ -270,6 +271,11 @@ void RenderThread::render()
 
 		//cout << "\tThread "<<_threadId<<" finished rendering"<<endl;
 		glFlush();
+
+		_renderingFlushMutex->lock();
+		numThreadsReceivedRenderingStartFlush++;
+		_renderingFlushCond->notify_all();
+		_renderingFlushMutex->unlock();
 
 		// Wait for the other threads to get here before swapping buffers
 		_swapBarrier->wait();

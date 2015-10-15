@@ -79,6 +79,8 @@ void MVREngineGLFW::runApp(AbstractMVRAppRef app)
 	_app->postInitialization();
 
 	_frameCount = 0;
+
+	updateFrame();
 	
 	while (app->isRunning()) {
 		runOneFrameOfApp(app);
