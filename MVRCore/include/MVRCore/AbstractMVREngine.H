@@ -200,6 +200,12 @@ protected:
 	 */
 	virtual void updateProjectionForHeadTracking();
 
+	/*! @brief Updates frame.
+		 *
+		 *  Updates frame information
+	*/
+	virtual void updateFrame();
+
 	AbstractMVRAppRef         _app;
 	ConfigMapRef      _configMap;
 	std::vector<EventRef> _events;

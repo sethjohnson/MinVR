@@ -298,10 +298,23 @@ void AbstractMVREngine::runApp(AbstractMVRAppRef app)
 
 	_frameCount = 0;
 	
+	updateFrame();
+
 	bool quit = false;
 	while (!quit) {
 		runOneFrameOfApp(app);
 	}
+}
+
+void AbstractMVREngine::updateFrame()
+{
+	pollUserInput();
+	updateProjectionForHeadTracking();
+
+	TimeStamp now = getCurrentTime();
+	Duration diff = getDuration(now,_syncTimeStart);
+	double syncTime = getDurationSeconds(diff);
+	_app->doUserInputAndPreDrawComputation(_events, syncTime);
 }
 
 void AbstractMVREngine::runOneFrameOfApp(AbstractMVRAppRef app)
@@ -321,15 +334,9 @@ void AbstractMVREngine::runOneFrameOfApp(AbstractMVRAppRef app)
 		}
 		threadsInitializedLock.unlock();
 		_app->postInitialization();
+
+		updateFrame();
 	}
-
-	pollUserInput();
-	updateProjectionForHeadTracking();
-
-	TimeStamp now = getCurrentTime();
-	Duration diff = getDuration(now,_syncTimeStart);
-	double syncTime = getDurationSeconds(diff);
-	_app->doUserInputAndPreDrawComputation(_events, syncTime);
 
 	//std::cout << "Notifying rendering threads to start rendering frame: "<<_frameCount++<<std::endl;
 	_startRenderingMutex.lock();
@@ -342,6 +349,8 @@ void AbstractMVREngine::runOneFrameOfApp(AbstractMVRAppRef app)
 	while (RenderThread::numThreadsReceivedRenderingStartFlush < _windows.size()) {
 		_renderingFlushCond.wait(renderingFlushLock);
 	}
+
+	updateFrame();
 
 	RenderThread::numThreadsReceivedRenderingStartFlush = 0;
 
