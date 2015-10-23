@@ -12,6 +12,7 @@
 #include "MVRCore/Event.H"
 #include "MVRCore/AbstractWindow.H"
 #include "MVRCore/AbstractCamera.H"
+#include "MVRCore/CameraOffAxis.H"
 #include <memory>
 
 namespace MinVR {
@@ -25,6 +26,7 @@ struct WindowInfo
 	int viewportIndex;
 
 	AbstractCameraRef getCamera() const { return window->getCamera(viewportIndex); }
+	MinVR::CameraOffAxis* getOffAxisCamera() const { return dynamic_cast<MinVR::CameraOffAxis*>(getCamera().get()); }
 };
 
 struct AppInfo
