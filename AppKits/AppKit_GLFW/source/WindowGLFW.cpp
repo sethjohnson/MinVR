@@ -131,6 +131,7 @@ WindowGLFW::WindowGLFW(WindowSettingsRef settings, std::vector<AbstractCameraRef
 		glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, settings->contextVersion.major);
 		glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, settings->contextVersion.minor);
+		glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 	}
 
 	if (settings->fullScreen) {
@@ -205,6 +206,7 @@ void WindowGLFW::initGLEW()
 	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, GL_TRUE); // Create a debug context so glew is initialized with debug context extensions as well in case we need them later
 	GLFWwindow* tempWin = glfwCreateWindow(200, 200, "Temporary", NULL, NULL);
 	glfwMakeContextCurrent(tempWin);
+	glewExperimental = GL_TRUE;
 	GLenum err = glewInit();
 	if (GLEW_OK != err)
 	{
