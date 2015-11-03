@@ -16,9 +16,9 @@ Window1_Width           600
 Window1_Height          600
 Window1_X               40
 Window1_Y               40
-Window1_RGBBits         0
-Window1_AlphaBits       0
-Window1_DepthBits       8
+Window1_RGBBits         8
+Window1_AlphaBits       8
+Window1_DepthBits       32
 Window1_StencilBits     0
 Window1_MSAASamples     1
 Window1_FullScreen      0
@@ -50,9 +50,9 @@ Window2_Height          600
 Window2_X               660
 Window2_Y               40
 Window2_Center          0
-Window2_RGBBits         0
-Window2_AlphaBits       0
-Window2_DepthBits       8
+Window2_RGBBits         8
+Window2_AlphaBits       8
+Window2_DepthBits       32
 Window2_StencilBits     0
 Window2_MSAASamples     1
 Window2_FullScreen      0

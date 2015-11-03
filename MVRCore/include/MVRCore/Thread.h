@@ -58,6 +58,8 @@ namespace MinVR
 
 #if defined(WIN32)
 #define THREAD_LOCAL __declspec(thread)
+#elif defined(__APPLE__)
+#define THREAD_LOCAL __thread
 #else
 #define THREAD_LOCAL thread_local
 #endif
